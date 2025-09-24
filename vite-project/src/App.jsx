@@ -32,7 +32,7 @@ const App = () => {
       backgroundColor: "#18181b", // zinc-900
       borderColor: "#3f3f46", // zinc-700
       color: "white",
-      innerWidth: "20%",
+      innerWidth: "100%",
       boxShadow: "none",
       "&:hover": {
         borderColor: "#52525b", // zinc-600
@@ -42,6 +42,7 @@ const App = () => {
       ...base,
       backgroundColor: "#18181b", // zinc-900
       color: "white",
+      with: "100%",
     }),
     option: (base, state) => ({
       ...base,
@@ -55,14 +56,17 @@ const App = () => {
     singleValue: (base) => ({
       ...base,
       color: "white",
+      with: "100%",
     }),
     input: (base) => ({
       ...base,
       color: "white",
+      with: "100%",
     }),
     placeholder: (base) => ({
       ...base,
       color: "#a1a1aa", // zinc-400
+      with: "100%",
     }),
   };
 
@@ -70,21 +74,26 @@ const App = () => {
     <>
       <Navbar />
       <div
-        className="main flex items-center justify-between bg-black-500"
+        className="main flex justify-between bg-black-500"
         style={{ height: "calc(100vh - 90px)" }}
       >
-        <div className="left h-[80%] w-[50%]">
-          <div className="tabs"></div>
-
-          <Select
-            value={selectedOption}
-            onChange={(e) => {
-              setSelectedOption(e);
-            }}
-            options={options}
-            styles={customStyles}
-          />
-          <button className="btnNormal bg-zinc-900">Review</button>
+        <div className="left h-[90%] w-[50%]">
+          <div className="tabs !mt-5 !px-5 !mb-3 w-full flex items-center gap-[10px]">
+            <Select
+              value={selectedOption}
+              onChange={(e) => {
+                setSelectedOption(e);
+              }}
+              options={options}
+              styles={customStyles}
+            />
+            <button className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800">
+              Review
+            </button>
+            <button className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800">
+              Fix Code
+            </button>
+          </div>
           <Editor
             height="100%"
             theme="vs-dark"
