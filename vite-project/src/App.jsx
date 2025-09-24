@@ -6,9 +6,22 @@ import Select from "react-select";
 
 const App = () => {
   const options = [
-    { value: "chocolate", label: "Chocolate" },
-    { value: "strawberry", label: "Strawberry" },
-    { value: "vanilla", label: "Vanilla" },
+    { value: "javascript", label: "JavaScript" },
+    { value: "typescript", label: "TypeScript" },
+    { value: "python", label: "Python" },
+    { value: "java", label: "Java" },
+    { value: "csharp", label: "C#" },
+    { value: "cpp", label: "C++" },
+    { value: "php", label: "PHP" },
+    { value: "ruby", label: "Ruby" },
+    { value: "go", label: "Go" },
+    { value: "rust", label: "Rust" },
+    { value: "swift", label: "Swift" },
+    { value: "kotlin", label: "Kotlin" },
+    { value: "dart", label: "Dart" },
+    { value: "sql", label: "SQL" },
+    { value: "html", label: "HTML" },
+    { value: "css", label: "CSS" },
   ];
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
@@ -19,6 +32,7 @@ const App = () => {
       backgroundColor: "#18181b", // zinc-900
       borderColor: "#3f3f46", // zinc-700
       color: "white",
+      innerWidth: "20%",
       boxShadow: "none",
       "&:hover": {
         borderColor: "#52525b", // zinc-600
@@ -60,6 +74,8 @@ const App = () => {
         style={{ height: "calc(100vh - 90px)" }}
       >
         <div className="left h-[80%] w-[50%]">
+          <div className="tabs"></div>
+
           <Select
             value={selectedOption}
             onChange={(e) => {
@@ -68,6 +84,7 @@ const App = () => {
             options={options}
             styles={customStyles}
           />
+          <button className="btnNormal bg-zinc-900">Review</button>
           <Editor
             height="100%"
             theme="vs-dark"
