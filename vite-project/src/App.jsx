@@ -71,9 +71,40 @@ const App = () => {
     }),
   };
 
+  const [code, setCode] = useState("");
+
   const ai = new GoogleGenAI({
     apiKey: "AIzaSyBkm52SrYSW81hoODzzc9oEAIu1GH-3V_k",
   });
+
+  async function reviewCode() {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
+
+I'm sharing a piece of code written in ${selectedOption.value}.
+
+Your job is to deeply review this code and provide the following:
+
+1. A quality rating: Better, Good, Norwal, or Bad.
+
+2. Detailed suggestions for improvement, including best practices and advanced alternatives.
+
+3. A clear explanation of what the code does, step by step.
+
+4. A list of any potential bugs or logical errors if found.
+
+5.Identification of syntax errors or runtime errors, if present.
+
+6. Solutions and recommendations on how to fix each identified issue.
+
+Analyze it like a senior developer reviewing a pull request.
+
+code: ${code}
+`,
+    });
+    console.log(response.text);
+  }
 
   return (
     <>
@@ -103,13 +134,16 @@ const App = () => {
             height="100%"
             theme="vs-dark"
             language={selectedOption.value}
-            value="// some comment"
+            value={code}
+            onChange={(e) => {
+              setCode(e);
+            }}
           />
         </div>
 
         <div className="right !p-[10px] bg-zinc-900 w-[50%] h-[100%]">
           <div className="topTab border-b-[1px] border-t-[1px] border-[#fff] flex items-center justify-between h-[60px] ">
-            <p className="font-[700] text-[17px]">Response</p>
+            <p className="font-[700] text-[17px]">Response {code.toString()}</p>
           </div>
         </div>
       </div>
