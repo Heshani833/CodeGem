@@ -4,6 +4,8 @@ import Navbar from "./components/Navbar";
 import Editor from "@monaco-editor/react";
 import Select from "react-select";
 import { GoogleGenAI } from "@google/genai";
+import ReactMarkdown from "react-markdown";
+import { DotLoader } from "react-spinners";
 
 const App = () => {
   const options = [
@@ -77,7 +79,11 @@ const App = () => {
     apiKey: "AIzaSyBkm52SrYSW81hoODzzc9oEAIu1GH-3V_k",
   });
 
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState("");
+
   async function reviewCode() {
+    setLoading(true);
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
@@ -104,6 +110,8 @@ code: ${code}
 `,
     });
     console.log(response.text);
+    setResponse(response.text);
+    setLoading(false);
   }
 
   return (
@@ -123,7 +131,16 @@ code: ${code}
               options={options}
               styles={customStyles}
             />
-            <button className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800">
+            <button
+              onClick={() => {
+                if (code === "") {
+                  alert("Please enter the code first!");
+                } else {
+                  reviewCode();
+                }
+              }}
+              className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800"
+            >
               Review
             </button>
             <button className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800">
@@ -143,8 +160,10 @@ code: ${code}
 
         <div className="right !p-[10px] bg-zinc-900 w-[50%] h-[100%]">
           <div className="topTab border-b-[1px] border-t-[1px] border-[#fff] flex items-center justify-between h-[60px] ">
-            <p className="font-[700] text-[17px]">Response {code.toString()}</p>
+            <p className="font-[700] text-[17px]">Response</p>
           </div>
+          {loading && <DotLoader color="#9333ea" />}
+          <ReactMarkdown>{response}</ReactMarkdown>
         </div>
       </div>
     </>
