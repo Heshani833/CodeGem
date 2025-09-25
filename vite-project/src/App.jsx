@@ -31,7 +31,8 @@ const App = () => {
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [response, setResponse] = useState("");
-  const [responseType, setResponseType] = useState("review"); // 'review' or 'fix'
+  const [responseType, setResponseType] = useState("review");
+  const [fixedCode, setFixedCode] = useState("");
 
   const customStyles = {
     control: (base) => ({
@@ -81,12 +82,32 @@ const App = () => {
     apiKey: "AIzaSyBkm52SrYSW81hoODzzc9oEAIu1GH-3V_k",
   });
 
+  const extractFixedCode = (text) => {
+    const codeBlockRegex = /```(?:\w+)?\s*([\s\S]*?)```/;
+    const match = text.match(codeBlockRegex);
+
+    if (match && match[1]) {
+      return match[1].trim();
+    }
+
+    const inlineCodeRegex = /`([^`]+)`/g;
+    const inlineMatches = text.match(inlineCodeRegex);
+
+    if (inlineMatches && inlineMatches.length > 0) {
+      return inlineMatches[0].replace(/`/g, "").trim();
+    }
+
+    return null;
+  };
+
   async function reviewCode() {
     setLoading(true);
     setResponseType("review");
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
+    setFixedCode("");
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
 
 I'm sharing a piece of code written in ${selectedOption.value}.
 
@@ -108,18 +129,23 @@ Analyze it like a senior developer reviewing a pull request.
 
 code: ${code}
 `,
-    });
-    console.log(response.text);
-    setResponse(response.text);
+      });
+      console.log(response.text);
+      setResponse(response.text);
+    } catch (error) {
+      console.error("Error reviewing code:", error);
+      setResponse("Error reviewing code. Please try again.");
+    }
     setLoading(false);
   }
 
   async function fixCode() {
     setLoading(true);
     setResponseType("fix");
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
 
 I'm sharing a piece of code written in ${selectedOption.value}.
 
@@ -131,15 +157,42 @@ Your job is to fix this code by:
 4. Following best practices for the language
 5. Providing the complete corrected code
 
-Please return the fixed code with explanations of what was changed.
+IMPORTANT: Return the fixed code inside a markdown code block. First provide a brief explanation of what was fixed, then include the complete corrected code in a code block.
+
+Format your response like this:
+[Explanation of fixes...]
+
+\`\`\`${selectedOption.value}
+[Fixed code here]
+\`\`\`
 
 code: ${code}
 `,
-    });
-    console.log(response.text);
-    setResponse(response.text);
+      });
+      console.log(response.text);
+      setResponse(response.text);
+
+      const extractedCode = extractFixedCode(response.text);
+      if (extractedCode) {
+        setFixedCode(extractedCode);
+      }
+    } catch (error) {
+      console.error("Error fixing code:", error);
+      setResponse("Error fixing code. Please try again.");
+      setFixedCode("");
+    }
     setLoading(false);
   }
+
+  const applyFix = () => {
+    if (fixedCode) {
+      setCode(fixedCode);
+      setResponse(
+        (prevResponse) =>
+          prevResponse + "\n\n **Fixed code has been applied to the editor!**"
+      );
+    }
+  };
 
   return (
     <>
@@ -182,6 +235,7 @@ code: ${code}
             >
               Fix Code
             </button>
+            
           </div>
           <Editor
             height="100%"
@@ -197,15 +251,34 @@ code: ${code}
         <div className="right overflow-scroll !p-[10px] bg-zinc-900 w-[50%] h-[100%]">
           <div className="topTab border-b-[1px] border-t-[1px] border-[#fff] flex items-center justify-between h-[60px] ">
             <p className="font-[700] text-[17px]">Response</p>
+            {fixedCode && (
+              <button
+                onClick={applyFix}
+                className="btnNormal bg-green-600 px-4 transition-all hover:bg-green-700"
+              >
+                Apply Fix to Editor
+              </button>
+            )}
           </div>
           {loading ? (
             <div className="loading-container">
-              <DotLoader color="#9333ea" size={60} />
-              <div className="loading-text">Analyzing your code...</div>
+              <DotLoader color="#3b82f6" size={60} />
+              <div className="loading-text">
+                {responseType === "fix"
+                  ? "Fixing your code..."
+                  : "Analyzing your code..."}
+              </div>
             </div>
           ) : (
             <div className="markdown-response">
               <ReactMarkdown>{response}</ReactMarkdown>
+              {fixedCode && (
+                <div className="mt-4 p-3 bg-green-900/20 border border-green-500 rounded-lg grid place-items-center">
+                  <p className="text-green-400 font-semibold p-[2px]">
+                    Auto-fix available! Click "Apply Fix" to update your code.
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
