@@ -32,8 +32,8 @@ const App = () => {
   const customStyles = {
     control: (base) => ({
       ...base,
-      backgroundColor: "#18181b", // zinc-900
-      borderColor: "#3f3f46", // zinc-700
+      backgroundColor: "#18181b", 
+      borderColor: "#3f3f46", 
       color: "white",
       innerWidth: "100%",
       boxShadow: "none",
@@ -43,17 +43,17 @@ const App = () => {
     }),
     menu: (base) => ({
       ...base,
-      backgroundColor: "#18181b", // zinc-900
+      backgroundColor: "#18181b", 
       color: "white",
       with: "100%",
     }),
     option: (base, state) => ({
       ...base,
-      backgroundColor: state.isFocused ? "#27272a" : "#18181b", // hover zinc-800
+      backgroundColor: state.isFocused ? "#27272a" : "#18181b", 
       color: "white",
       cursor: "pointer",
       "&:active": {
-        backgroundColor: "#3f3f46", // zinc-700
+        backgroundColor: "#3f3f46", 
       },
     }),
     singleValue: (base) => ({
@@ -68,7 +68,7 @@ const App = () => {
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#a1a1aa", // zinc-400
+      color: "#a1a1aa", 
       with: "100%",
     }),
   };
@@ -114,6 +114,38 @@ code: ${code}
     setLoading(false);
   }
 
+  async function fixCode() {
+    if (code === "") {
+      alert("Please enter the code first!");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash",
+        contents: `You are an expert-level software developer. Please analyze and fix the following ${selectedOption.value} code:
+
+Code: ${code}
+
+Please provide:
+1. The corrected/fixed version of the code
+2. A brief explanation of what was wrong and how you fixed it
+3. Any important notes about the changes made
+
+Focus on fixing syntax errors, logical errors, performance issues, and code quality problems.`,
+      });
+
+      console.log(response.text);
+      setResponse(response.text);
+    } catch (error) {
+      console.error("Error fixing code:", error);
+      setResponse("Error occurred while fixing the code. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <>
       <Navbar />
@@ -143,7 +175,10 @@ code: ${code}
             >
               Review
             </button>
-            <button className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800">
+            <button
+              onClick={fixCode}
+              className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800"
+            >
               Fix Code
             </button>
           </div>
