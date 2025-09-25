@@ -3,6 +3,7 @@ import "./App.css";
 import Navbar from "./components/Navbar";
 import Editor from "@monaco-editor/react";
 import Select from "react-select";
+import { GoogleGenAI } from "@google/genai";
 
 const App = () => {
   const options = [
@@ -35,7 +36,7 @@ const App = () => {
       innerWidth: "100%",
       boxShadow: "none",
       "&:hover": {
-        borderColor: "#52525b", // zinc-600
+        borderColor: "#52525b",
       },
     }),
     menu: (base) => ({
@@ -70,6 +71,10 @@ const App = () => {
     }),
   };
 
+  const ai = new GoogleGenAI({
+    apiKey: "AIzaSyBkm52SrYSW81hoODzzc9oEAIu1GH-3V_k",
+  });
+
   return (
     <>
       <Navbar />
@@ -97,13 +102,13 @@ const App = () => {
           <Editor
             height="100%"
             theme="vs-dark"
-            language="javascript"
+            language={selectedOption.value}
             value="// some comment"
           />
         </div>
 
         <div className="right !p-[10px] bg-zinc-900 w-[50%] h-[100%]">
-          <div className="topTab flex items-center justify-between h-[60px] ">
+          <div className="topTab border-b-[1px] border-t-[1px] border-[#fff] flex items-center justify-between h-[60px] ">
             <p className="font-[700] text-[17px]">Response</p>
           </div>
         </div>
