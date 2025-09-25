@@ -28,12 +28,16 @@ const App = () => {
   ];
 
   const [selectedOption, setSelectedOption] = useState(options[0]);
+  const [code, setCode] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [response, setResponse] = useState("");
+  const [responseType, setResponseType] = useState("review"); // 'review' or 'fix'
 
   const customStyles = {
     control: (base) => ({
       ...base,
-      backgroundColor: "#18181b", 
-      borderColor: "#3f3f46", 
+      backgroundColor: "#18181b",
+      borderColor: "#3f3f46",
       color: "white",
       innerWidth: "100%",
       boxShadow: "none",
@@ -43,17 +47,17 @@ const App = () => {
     }),
     menu: (base) => ({
       ...base,
-      backgroundColor: "#18181b", 
+      backgroundColor: "#18181b",
       color: "white",
       with: "100%",
     }),
     option: (base, state) => ({
       ...base,
-      backgroundColor: state.isFocused ? "#27272a" : "#18181b", 
+      backgroundColor: state.isFocused ? "#27272a" : "#18181b",
       color: "white",
       cursor: "pointer",
       "&:active": {
-        backgroundColor: "#3f3f46", 
+        backgroundColor: "#3f3f46",
       },
     }),
     singleValue: (base) => ({
@@ -68,22 +72,18 @@ const App = () => {
     }),
     placeholder: (base) => ({
       ...base,
-      color: "#a1a1aa", 
+      color: "#a1a1aa",
       with: "100%",
     }),
   };
-
-  const [code, setCode] = useState("");
 
   const ai = new GoogleGenAI({
     apiKey: "AIzaSyBkm52SrYSW81hoODzzc9oEAIu1GH-3V_k",
   });
 
-  const [loading, setLoading] = useState(false);
-  const [response, setResponse] = useState("");
-
   async function reviewCode() {
     setLoading(true);
+    setResponseType("review");
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
       contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
@@ -92,7 +92,7 @@ I'm sharing a piece of code written in ${selectedOption.value}.
 
 Your job is to deeply review this code and provide the following:
 
-1. A quality rating: Better, Good, Norwal, or Bad.
+1. A quality rating: Better, Good, Normal, or Bad.
 
 2. Detailed suggestions for improvement, including best practices and advanced alternatives.
 
@@ -100,7 +100,7 @@ Your job is to deeply review this code and provide the following:
 
 4. A list of any potential bugs or logical errors if found.
 
-5.Identification of syntax errors or runtime errors, if present.
+5. Identification of syntax errors or runtime errors, if present.
 
 6. Solutions and recommendations on how to fix each identified issue.
 
@@ -115,40 +115,35 @@ code: ${code}
   }
 
   async function fixCode() {
-    if (code === "") {
-      alert("Please enter the code first!");
-      return;
-    }
-
     setLoading(true);
-    try {
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: `You are an expert-level software developer. Please analyze and fix the following ${selectedOption.value} code:
+    setResponseType("fix");
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `You are an expert-level software developer, skilled in writing efficient, clean, and advanced code.
 
-Code: ${code}
+I'm sharing a piece of code written in ${selectedOption.value}.
 
-Please provide:
-1. The corrected/fixed version of the code
-2. A brief explanation of what was wrong and how you fixed it
-3. Any important notes about the changes made
+Your job is to fix this code by:
 
-Focus on fixing syntax errors, logical errors, performance issues, and code quality problems.`,
-      });
+1. Identifying and correcting any syntax errors
+2. Fixing logical errors and bugs
+3. Improving code efficiency and performance
+4. Following best practices for the language
+5. Providing the complete corrected code
 
-      console.log(response.text);
-      setResponse(response.text);
-    } catch (error) {
-      console.error("Error fixing code:", error);
-      setResponse("Error occurred while fixing the code. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+Please return the fixed code with explanations of what was changed.
+
+code: ${code}
+`,
+    });
+    console.log(response.text);
+    setResponse(response.text);
+    setLoading(false);
   }
 
   return (
     <>
-      <Navbar />
+      <Navbar responseType={responseType} />
       <div
         className="main flex justify-between bg-black-500"
         style={{ height: "calc(100vh - 90px)" }}
@@ -176,7 +171,13 @@ Focus on fixing syntax errors, logical errors, performance issues, and code qual
               Review
             </button>
             <button
-              onClick={fixCode}
+              onClick={() => {
+                if (code === "") {
+                  alert("Please enter the code first!");
+                } else {
+                  fixCode();
+                }
+              }}
               className="btnNormal bg-zinc-900 min-w-[120px] transition-all hover:bg-zinc-800"
             >
               Fix Code
@@ -199,7 +200,7 @@ Focus on fixing syntax errors, logical errors, performance issues, and code qual
           </div>
           {loading ? (
             <div className="loading-container">
-              <DotLoader color="#3b82f6" size={60} />
+              <DotLoader color="#9333ea" size={60} />
               <div className="loading-text">Analyzing your code...</div>
             </div>
           ) : (
