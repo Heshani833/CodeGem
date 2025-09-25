@@ -158,12 +158,20 @@ code: ${code}
           />
         </div>
 
-        <div className="right !p-[10px] bg-zinc-900 w-[50%] h-[100%]">
+        <div className="right overflow-scroll !p-[10px] bg-zinc-900 w-[50%] h-[100%]">
           <div className="topTab border-b-[1px] border-t-[1px] border-[#fff] flex items-center justify-between h-[60px] ">
             <p className="font-[700] text-[17px]">Response</p>
           </div>
-          {loading && <DotLoader color="#9333ea" />}
-          <ReactMarkdown>{response}</ReactMarkdown>
+          {loading ? (
+            <div className="loading-container">
+              <DotLoader color="#9333ea" size={60} />
+              <div className="loading-text">Analyzing your code...</div>
+            </div>
+          ) : (
+            <div className="markdown-response">
+              <ReactMarkdown>{response}</ReactMarkdown>
+            </div>
+          )}
         </div>
       </div>
     </>
