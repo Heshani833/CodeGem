@@ -164,7 +164,7 @@ code: ${code}
           </div>
           {loading ? (
             <div className="loading-container">
-              <DotLoader color="#9333ea" size={60} />
+              <DotLoader color="#3b82f6" size={60} />
               <div className="loading-text">Analyzing your code...</div>
             </div>
           ) : (

@@ -10,11 +10,11 @@ const Navbar = () => {
         style={{ padding: "0 150px" }}
       >
         <div className="logo flex items-center gap-[10px] cursor-pointer">
-          <BrainCircuit size={26} color="#7e22ce" />
+          <BrainCircuit size={26} color="#3b82f6" />
           <span className="text-white font-bold text-2xl ml-2">CodeGem</span>
         </div>
         <div className="icons flex items-center gap-[20px]">
-          <i className="cursor-pointer transition-all duration-300 hover:scale-125 hover:text-yellow-500">
+          <i className="cursor-pointer transition-all duration-300 hover:scale-125 hover:text-blue-600">
             <Sun />
           </i>
         </div>
