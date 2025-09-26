@@ -235,7 +235,6 @@ code: ${code}
             >
               Fix Code
             </button>
-            
           </div>
           <Editor
             height="100%"
@@ -254,7 +253,7 @@ code: ${code}
             {fixedCode && (
               <button
                 onClick={applyFix}
-                className="btnNormal bg-green-600 px-4 transition-all hover:bg-green-700"
+                className="btnNormal bg-blue-600 px-4 transition-all hover:bg-blue-700"
               >
                 Apply Fix to Editor
               </button>
@@ -273,8 +272,8 @@ code: ${code}
             <div className="markdown-response">
               <ReactMarkdown>{response}</ReactMarkdown>
               {fixedCode && (
-                <div className="mt-4 p-3 bg-green-900/20 border border-green-500 rounded-lg grid place-items-center">
-                  <p className="text-green-400 font-semibold p-[2px]">
+                <div className="mt-4 p-3 bg-blue-900/20 border border-blue-500 rounded-lg grid place-items-center">
+                  <p className="text-blue-400 font-semibold p-[2px]">
                     Auto-fix available! Click "Apply Fix" to update your code.
                   </p>
                 </div>
